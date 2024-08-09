@@ -1,0 +1,24 @@
+{
+    "version": 1,
+    "projects": {
+      "@web-platform/optimizely-content-model-creator": {
+        "root": "packages/optimizely-content-model-creator",
+        "sourceRoot": "packages/optimizely-content-model-creator/src",
+        "projectType": "application",
+        "targets": {
+          "build": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "tsc --project packages/optimizely-content-model-creator/tsconfig.json"
+                }
+              ],
+              "parallel": false
+            }
+          }
+        }
+      }
+    }
+  }
+  
