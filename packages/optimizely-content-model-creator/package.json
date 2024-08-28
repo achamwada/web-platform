@@ -7,7 +7,6 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@api/content-management-system": "file:.api/apis/content-management-system",
     "dotenv-extended": "^2.9.0"
   },
   "devDependencies": {
