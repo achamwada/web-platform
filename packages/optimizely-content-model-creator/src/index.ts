@@ -1,10 +1,15 @@
-import contentManagementSystem from "@api/content-management-system";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { OPTIMIZELY_API_KEY } from "./utils/constants";
+import Optimizely from "./services/optimizely";
 
-const client = contentManagementSystem.auth(OPTIMIZELY_API_KEY);
+const run = async () => {
+  const client = Optimizely.getInstance().getApiClient();
+  const contentType = await client.contenttypes.contentTypesGet("Experience");
+  console.log("contentType ===>", contentType);
+};
+
+run();
 
 // Define the directory to scan for components
 const componentsDir = path.resolve(__dirname, "components");
