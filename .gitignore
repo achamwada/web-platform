@@ -128,3 +128,30 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Local .terraform directories (Terraform modules, providers, etc.)
+.terraform/
+
+# Terraform lock file (provider version locking)
+.terraform.lock.hcl
+
+# Terraform plan files (these are binary and environment-specific)
+tfplan
+*.tfplan
+
+# State files (contains sensitive data like passwords, API keys, etc.)
+terraform.tfstate
+terraform.tfstate.backup
+
+# Crash logs
+crash.log
+
+# Variables files (optional, if storing sensitive information locally)
+*.tfvars
+*.tfvars.json
+
+# Override files (commonly used to override Terraform configurations locally)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
