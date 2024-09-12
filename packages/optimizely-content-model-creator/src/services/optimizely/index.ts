@@ -10,7 +10,8 @@ import {
   OPTIMIZELY_API_ID,
   OPTIMIZELY_API_SECRET,
   OPTIMIZELY_GRANT_TYPE,
-} from "../../utils/constants";
+  OPTIMIZELY_API_URL
+} from "../../src/utils/constants";
 
 export type OauthTokenResponse = Promise<
   HttpResponse<OauthToken, OauthTokenError>
@@ -22,7 +23,10 @@ class OptimizelyClient {
 
   // Private constructor to prevent instantiation from outside
   private constructor() {
-    this.apiClient = new Api();
+    this.apiClient = new Api({
+      baseUrl: OPTIMIZELY_API_URL
+    });
+    
     this.authenticate();
   }
 
@@ -34,16 +38,11 @@ class OptimizelyClient {
       grant_type: OPTIMIZELY_GRANT_TYPE,
     };
 
-    try {
-      const tokenResponse = await this.apiClient.oauth.oauthToken(authRequest);
+    console.log("authRequest ===>",authRequest)
 
-      /*if (tokenResponse.data.access_token) {
-        this.apiClient.configuration.accessToken =
-          tokenResponse.data.access_token;
-        console.log("Optimizely API client authenticated successfully.");
-      } else {
-        throw new Error("Failed to retrieve access token.");
-      }*/
+    try {
+      const auth = await this.apiClient.oauth.oauthToken(authRequest)
+      console.log("auth ===>",auth)
     } catch (error) {
       console.error("Error during authentication:", error);
     }

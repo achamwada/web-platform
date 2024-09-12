@@ -2,7 +2,7 @@ import { generateApi } from "swagger-typescript-api";
 import * as path from "path";
 import * as fs from "fs";
 import logger from "../services/logger";
-import { SERVICES } from "../utils/constants";
+import { SERVICES } from "../src/utils/constants";
 
 interface SwaggerMeta {
   url: string;
