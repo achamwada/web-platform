@@ -5,7 +5,7 @@ import {
   OauthTokenError,
   OauthTokenRequest,
 } from "../../src/types/autogen/Optimizely/Optimizely CMS Content API";
-import { type Api as APIType } from "../../src/types/autogen/Optimizely/Optimizely CMS Content API";
+import { type Api as APIType } from "../../src/types/autogen/Optimizely/OptimizelyCMSContentAPI";
 import {
   OPTIMIZELY_API_ID,
   OPTIMIZELY_API_SECRET,

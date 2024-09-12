@@ -14,7 +14,7 @@ interface SwaggerMeta {
 const swaggerMeta: SwaggerMeta[] = [
   {
     url: "https://app-twen05saas00up1p001.cms.optimizely.com/_cms/preview2/docs/content-openapi.json",
-    title: "Optimizely CMS Content API",
+    title: "OptimizelyCMSContentAPI",
     namespace: "Optimizely",
     version: "preview2",
   },
