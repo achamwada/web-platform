@@ -1,0 +1,20 @@
+# Base Node.js Alpine Image with Yarn for Next.js Application
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies required for building native addons
+# and install Yarn globally
+RUN apk add --no-cache --virtual .build-deps \
+  python3 \
+  make \
+  g++ \
+  && yarn set version stable \
+  && apk del .build-deps
+
+# Expose the port for the Next.js app
+EXPOSE 3000
+
+# Default command (this will be overridden when using in Next.js Dockerfile)
+CMD ["node"]

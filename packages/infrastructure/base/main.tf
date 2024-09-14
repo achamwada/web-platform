@@ -4,7 +4,7 @@ module "dynamodb_terraform_locks" {
   table_name     = "terraform-locks"
   hash_key       = "LockID"
   hash_key_type  = "S"
-  billing_mode   = "PAY_PER_REQUEST"  # Use provisioned if you want to specify capacity
+  billing_mode   = "PAY_PER_REQUEST"
   tags = {
     "Environment" = "dev"
     "Project"     = "opti-web-app-infrastructure"
