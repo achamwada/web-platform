@@ -1,10 +1,10 @@
 module "dynamodb_terraform_locks" {
-  source     = "../modules/dynamodb"
+  source = "../modules/dynamodb"
 
-  table_name     = "terraform-locks"
-  hash_key       = "LockID"
-  hash_key_type  = "S"
-  billing_mode   = "PAY_PER_REQUEST"
+  table_name    = "terraform-locks"
+  hash_key      = "LockID"
+  hash_key_type = "S"
+  billing_mode  = "PAY_PER_REQUEST"
   tags = {
     "Environment" = "dev"
     "Project"     = "opti-web-app-infrastructure"
@@ -15,8 +15,8 @@ module "dynamodb_terraform_locks" {
 module "s3_backend_bucket" {
   source = "../modules/s3"
 
-  bucket_name        = "opti-web-app"
-  terraform_backend  = true
+  bucket_name          = "opti-web-app"
+  terraform_backend    = true
   encryption_algorithm = "AES256"
   tags = {
     "Environment" = "dev"
@@ -26,6 +26,6 @@ module "s3_backend_bucket" {
 
 
 module "ecr" {
-  source   = "../modules/ecr"
+  source    = "../modules/ecr"
   repo_name = "opti-web-app-base"
 }

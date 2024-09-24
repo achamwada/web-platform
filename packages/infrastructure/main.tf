@@ -9,17 +9,17 @@ terraform {
 }
 
 module "vpc" {
-  source = "./modules/vpc"
+  source               = "./modules/vpc"
   cidr_block           = "10.0.0.0/16"
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
 module "alb" {
-  source             = "./modules/alb"
-  name               = "opti-web-alb"
-  vpc_id             = module.vpc.vpc_id
-  subnet_ids         = module.vpc.public_subnet_ids
+  source            = "./modules/alb"
+  name              = "opti-web-alb"
+  vpc_id            = module.vpc.vpc_id
+  subnet_ids        = module.vpc.public_subnet_ids
   security_group_id = module.security_groups.alb_sg_id
 }
 
@@ -31,7 +31,7 @@ module "nlb" {
 }
 
 module "ecr" {
-  source   = "./modules/ecr"
+  source    = "./modules/ecr"
   repo_name = "opti-web-app"
 }
 
@@ -138,7 +138,7 @@ module "api_gateway" {
 }
 
 module "security_groups" {
-  source         = "./modules/security_groups"
-  vpc_id         = module.vpc.vpc_id
-  ecs_task_port  = 3000
+  source        = "./modules/security_groups"
+  vpc_id        = module.vpc.vpc_id
+  ecs_task_port = 3000
 }

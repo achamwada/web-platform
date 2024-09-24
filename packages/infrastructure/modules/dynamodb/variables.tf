@@ -47,7 +47,7 @@ variable "write_capacity" {
 variable "tags" {
   description = "A map of tags to assign to the table"
   type        = map(string)
-  default     = {
+  default = {
     "ManagedBy" = "Terraform"
   }
 }
