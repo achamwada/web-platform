@@ -1,0 +1,9 @@
+{
+  "name": "TalkBot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.64.0"
+  }
+}
