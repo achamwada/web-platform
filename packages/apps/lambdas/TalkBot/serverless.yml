@@ -26,3 +26,4 @@ custom:
   serverless-offline:
     stage: ${opt:stage, 'dev'}
     prefix: ""
+    httpPort: 7777

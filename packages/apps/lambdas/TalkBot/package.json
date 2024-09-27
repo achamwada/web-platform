@@ -4,10 +4,9 @@
   "description": "An AWS Lambda function that uses Contentful API",
   "main": "dist/contentfulHandler.js",
   "scripts": {
-    "build:dev": "export NODE_ENV=development && webpack --config webpack.config.js",
-    "build:prod": "export NODE_ENV=production && webpack --config webpack.config.js",
-    "start": "npm run build:dev && sls offline start",
-    "deploy": "npm run build:prod && sls deploy",
+    "build": "tsc",
+    "start:local": "sls offline start",
+    "deploy": "sls deploy",
     "test": "jest"
   },
   "license": "MIT",
@@ -22,11 +21,8 @@
     "@types/jest": "^29.5.13",
     "jest": "^29.7.0",
     "serverless-offline": "^14.3.2",
-    "serverless-webpack": "^5.14.2",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.6.2",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
+    "typescript": "^5.6.2"
   },
   "jest": {
     "testEnvironment": "node",
