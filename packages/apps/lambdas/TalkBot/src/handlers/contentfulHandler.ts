@@ -3,6 +3,7 @@ import { ContentfulService } from "../services/contentfulService";
 import {
   CONTENTFUL_SPACE_ID,
   CONTENTFUL_DELIVERY_TOKEN,
+  CONTENTFUL_ENVIRONMENT,
 } from "../config/constants";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
@@ -13,6 +14,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     contentEntryKey,
     CONTENTFUL_SPACE_ID,
     CONTENTFUL_DELIVERY_TOKEN,
+    CONTENTFUL_ENVIRONMENT,
   });
 
   if (!contentTypeId) {
@@ -27,6 +29,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const contentfulService = new ContentfulService({
       space: CONTENTFUL_SPACE_ID,
       accessToken: CONTENTFUL_DELIVERY_TOKEN,
+      environment: CONTENTFUL_ENVIRONMENT,
     });
     // If contentEntryKey is provided, fetch a single entry
     if (contentEntryKey) {

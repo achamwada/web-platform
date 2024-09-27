@@ -8,18 +8,15 @@ import {
 interface IContentfulConfig {
   space: string;
   accessToken: string;
+  environment: string;
 }
 
 export class ContentfulService {
   // @ts-ignore
   private client: ContentfulClientApi;
 
-  constructor({ accessToken, space }: IContentfulConfig) {
-    this.client = createClient({
-      space,
-      accessToken,
-      environment: "dev",
-    });
+  constructor(config: IContentfulConfig) {
+    this.client = createClient(config);
   }
 
   async getEntries<T extends EntrySkeletonType>(
