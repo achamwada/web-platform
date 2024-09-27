@@ -4,9 +4,13 @@ import { AI } from '@/lib/chat/actions'
 import { auth } from '@/auth'
 import { Session } from '@/lib/types'
 import { getMissingKeys } from '@/app/actions'
+import getContent from '../services/content'
+import { ChatContent } from '../services/content/types'
+
+
 
 export const metadata = {
-  title: 'Next.js AI Chatbot'
+  title: 'AI Chatbot'
 }
 
 export default async function IndexPage() {
@@ -14,9 +18,11 @@ export default async function IndexPage() {
   const session = (await auth()) as Session
   const missingKeys = await getMissingKeys()
 
+  const { fields } = await getContent<{fields: ChatContent }>('chatContext', 'travel-ai-chatbot')
+
   return (
     <AI initialAIState={{ chatId: id, messages: [] }}>
-      <Chat id={id} session={session} missingKeys={missingKeys} />
+      <Chat id={id} session={session} missingKeys={missingKeys} chatConfig={fields} />
     </AI>
   )
 }

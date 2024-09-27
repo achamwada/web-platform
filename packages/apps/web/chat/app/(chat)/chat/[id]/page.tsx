@@ -6,6 +6,8 @@ import { getChat, getMissingKeys } from '@/app/actions'
 import { Chat } from '@/components/chat'
 import { AI } from '@/lib/chat/actions'
 import { Session } from '@/lib/types'
+import getContent from '@/app/services/content'
+import { ChatContent } from '@/app/services/content/types'
 
 export interface ChatPageProps {
   params: {
@@ -34,6 +36,7 @@ export async function generateMetadata({
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
+  const { fields } = await getContent<{fields: ChatContent }>('chatContext', 'travel-ai-chatbot')
   const session = (await auth()) as Session
   const missingKeys = await getMissingKeys()
 
@@ -58,6 +61,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
           session={session}
           initialMessages={chat.messages}
           missingKeys={missingKeys}
+          chatConfig={fields}
         />
       </AI>
     )

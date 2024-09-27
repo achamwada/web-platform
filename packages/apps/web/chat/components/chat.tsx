@@ -11,15 +11,17 @@ import { Message, Session } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { toast } from 'sonner'
+import { ChatContent } from '@/app/services/content/types'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
   session?: Session
   missingKeys: string[]
+  chatConfig: ChatContent
 }
 
-export function Chat({ id, className, session, missingKeys }: ChatProps) {
+export function Chat({ id, className, session, missingKeys, chatConfig }: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   const [input, setInput] = useState('')
@@ -68,7 +70,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
         {messages.length ? (
           <ChatList messages={messages} isShared={false} session={session} />
         ) : (
-          <EmptyScreen />
+          <EmptyScreen chatConfig={chatConfig} />
         )}
         <div className="w-full h-px" ref={visibilityRef} />
       </div>
@@ -78,6 +80,8 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
         setInput={setInput}
         isAtBottom={isAtBottom}
         scrollToBottom={scrollToBottom}
+        favouriteMessages={chatConfig.buttons}
+        contextMsg={chatConfig.settings.system}
       />
     </div>
   )
