@@ -1,4 +1,5 @@
 terraform {
+
   backend "s3" {
     bucket         = "opti-web-app"
     key            = "opti-web-app/terraform.tfstate"
@@ -136,6 +137,27 @@ module "api_gateway" {
   integration_uri = aws_lb_target_group.alb_tg.arn
   stage_name      = "dev"
 }
+
+module "content_lambda_api_integration" {
+  source              = "./modules/lambda"
+  lambda_name         = "talkbot-lambda"
+  lambda_handler      = "src/handlers/contentfulHandler.handler"
+  lambda_runtime      = "nodejs18.x"
+  lambda_source_path = "${path.root}/../apps/lambdas/TalkBot/dist"
+  zip_name = "contentfulHandler"
+
+  api_gateway_id          = module.api_gateway.api_gateway_id
+  api_gateway_resource_id = module.api_gateway.api_gateway_resource_id
+  api_gateway_arn         = module.api_gateway.api_gateway_arn
+
+  # Custom request parameters
+  request_parameters = {
+    "contentTypeId"   = true
+    "contentEntryKey" = false
+  }
+
+}
+
 
 module "security_groups" {
   source        = "./modules/security_groups"
