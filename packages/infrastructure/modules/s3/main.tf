@@ -1,29 +1,6 @@
 resource "aws_s3_bucket" "generic_bucket" {
   bucket = var.bucket_name
 
-  # Enable versioning if the bucket is for Terraform backend
-  versioning {
-    enabled = var.terraform_backend ? true : false
-  }
-
-  # Enable default encryption (AES-256 or KMS) only for Terraform backend
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.terraform_backend ? [1] : []
-    content {
-      rule {
-        apply_server_side_encryption_by_default {
-          sse_algorithm = var.encryption_algorithm
-        }
-      }
-    }
-  }
-
-  # Optional access logging (regardless of terraform_backend)
-  logging {
-    target_bucket = var.logging_bucket
-    target_prefix = var.logging_prefix
-  }
-
   tags = var.tags
 }
 
@@ -37,10 +14,37 @@ resource "aws_s3_bucket_public_access_block" "generic_bucket_access_block" {
   restrict_public_buckets = true
 }
 
-output "bucket_name" {
-  value = aws_s3_bucket.generic_bucket.bucket
+# Separate resource for versioning
+resource "aws_s3_bucket_versioning" "generic_bucket_versioning" {
+  bucket = aws_s3_bucket.generic_bucket.bucket
+
+  versioning_configuration {
+    status = var.terraform_backend ? "Enabled" : "Suspended"
+  }
 }
 
-output "bucket_arn" {
-  value = aws_s3_bucket.generic_bucket.arn
+# Separate resource for server-side encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "generic_bucket_encryption" {
+  count  = var.terraform_backend ? 1 : 0
+  bucket = aws_s3_bucket.generic_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = var.encryption_algorithm
+    }
+  }
 }
+
+resource "aws_s3_bucket" "logging_bucket" {
+  count = var.create_logging_bucket ? 1 : 0
+  bucket = var.logging_bucket
+}
+
+
+# Separate resource for logging configuration
+resource "aws_s3_bucket_logging" "generic_bucket_logging" {
+  bucket        = aws_s3_bucket.generic_bucket.id
+  target_bucket = var.logging_bucket
+  target_prefix = var.logging_prefix
+}
+

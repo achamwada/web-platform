@@ -8,6 +8,7 @@ interface TalkbotResponse {
 const getContent = async <T = TalkbotResponse>(
   contentTypeId: string,
   contentEntryKey?: string
+  // @ts-ignore
 ): Promise<T> => {
   const url = API_GATEWAY_URL
 

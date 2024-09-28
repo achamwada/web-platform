@@ -1,10 +1,10 @@
 terraform {
 
   backend "s3" {
-    bucket         = "opti-web-app"
-    key            = "opti-web-app/terraform.tfstate"
+    bucket         = "tripvoya-web-platform"
+    key            = "${var.environment}/terraform.tfstate"
     region         = "eu-west-1"
-    dynamodb_table = "terraform-locks"
+    dynamodb_table = "${var.environment}-terraform-locks"
     encrypt        = true
   }
 }
@@ -18,7 +18,7 @@ module "vpc" {
 
 module "alb" {
   source            = "./modules/alb"
-  name              = "opti-web-alb"
+  name              = "tripvoya-web-platform-alb"
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.public_subnet_ids
   security_group_id = module.security_groups.alb_sg_id
@@ -26,14 +26,14 @@ module "alb" {
 
 module "nlb" {
   source     = "./modules/nlb"
-  name       = "opti-web-nlb"
+  name       = "tripvoya-web-platform-nlb"
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.public_subnet_ids
 }
 
 module "ecr" {
   source    = "./modules/ecr"
-  repo_name = "opti-web-app"
+  repo_name = "tripvoya-web-platform"
 }
 
 resource "aws_iam_role" "execution_role" {
@@ -110,17 +110,17 @@ resource "aws_lb_target_group" "alb_tg" {
 
 module "ecs_fargate" {
   source               = "./modules/ecs_fargate"
-  cluster_name         = "opti-web-cluster"
-  family               = "opti-web-app"
-  container_name       = "opti-web-container"
-  image                = "your-opti-web-app-image"
+  cluster_name         = "tripvoya-web-platform-cluster"
+  family               = "tripvoya-web-platform"
+  container_name       = "tripvoya-web-platform-container"
+  image                = "travel-web-chat:latest"
   cpu                  = "256"
   memory               = "512"
   container_port       = 3000
   host_port            = 3000
   execution_role_arn   = aws_iam_role.execution_role.arn
   task_role_arn        = aws_iam_role.task_role.arn
-  service_name         = "opti-web-service"
+  service_name         = "tripvoya-web-platform-service"
   desired_count        = 1
   subnet_ids           = module.vpc.public_subnet_ids
   security_group_ids   = [aws_security_group.ecs_sg.id]
@@ -130,7 +130,7 @@ module "ecs_fargate" {
 
 module "api_gateway" {
   source          = "./modules/api_gateway"
-  api_name        = "opti-web-api"
+  api_name        = "tripvoya-web-platform-api"
   api_description = "API Gateway for Next.js backend"
   path            = "api"
   http_method     = "POST"
