@@ -1,15 +1,12 @@
 terraform {
-
   backend "s3" {
-    bucket         = "tripvoya-web-platform"
-    key            = "${var.environment}/terraform.tfstate"
-    region         = "eu-west-1"
-    dynamodb_table = "${var.environment}-terraform-locks"
-    encrypt        = true
+    bucket = "tripvoya-web-platform"
+    region = "eu-west-1"
+    encrypt = true
   }
 }
 
-module "vpc" {
+/*module "vpc" {
   source               = "./modules/vpc"
   cidr_block           = "10.0.0.0/16"
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
@@ -128,39 +125,136 @@ module "ecs_fargate" {
 
 }
 
-module "api_gateway" {
-  source          = "./modules/api_gateway"
-  api_name        = "tripvoya-web-platform-api"
-  api_description = "API Gateway for Next.js backend"
-  path            = "api"
-  http_method     = "POST"
-  integration_uri = aws_lb_target_group.alb_tg.arn
-  stage_name      = "dev"
-}
-
-module "content_lambda_api_integration" {
-  source              = "./modules/lambda"
-  lambda_name         = "talkbot-lambda"
-  lambda_handler      = "src/handlers/contentfulHandler.handler"
-  lambda_runtime      = "nodejs18.x"
-  lambda_source_path = "${path.root}/../apps/lambdas/TalkBot/dist"
-  zip_name = "contentfulHandler"
-
-  api_gateway_id          = module.api_gateway.api_gateway_id
-  api_gateway_resource_id = module.api_gateway.api_gateway_resource_id
-  api_gateway_arn         = module.api_gateway.api_gateway_arn
-
-  # Custom request parameters
-  request_parameters = {
-    "contentTypeId"   = true
-    "contentEntryKey" = false
-  }
-
-}
-
-
 module "security_groups" {
   source        = "./modules/security_groups"
   vpc_id        = module.vpc.vpc_id
   ecs_task_port = 3000
+}*/
+
+
+module "lambda" {
+  source              = "./modules/lambda"
+  lambda_name         = "talkbot-lambda"
+  lambda_handler      = "talkbot-lambda/index.handler"
+  lambda_runtime      = "nodejs18.x"
+  lambda_source_path  = "${path.root}/../apps/lambdas/TalkBot/out/dist/TalkBot"
+
+  lambda_env_vars     = var.lambda_env_vars
+}
+
+module "api" {
+  source          = "./modules/api_gateway"
+  api_name        = "tripvoya-web-platform-api"
+  api_description = "API Gateway for web platform"
+  environment = var.environment
+  
+}
+
+
+resource "aws_api_gateway_resource" "content_service" {
+  rest_api_id = module.api.api_gateway_id
+  parent_id   = module.api.root_resource_id
+  path_part   = "content-service"
+
+}
+
+resource "aws_api_gateway_resource" "v2" {
+  rest_api_id = module.api.api_gateway_id
+  parent_id   = aws_api_gateway_resource.content_service.id
+  path_part   = "v2"
+
+}
+
+resource "aws_api_gateway_request_validator" "get-method" {
+  name                        = "QueryRequestValidator"
+  rest_api_id                 = module.api.api_gateway_id
+  validate_request_parameters = true
+}
+
+resource "aws_api_gateway_method" "proxy" {
+  rest_api_id = module.api.api_gateway_id
+  resource_id = aws_api_gateway_resource.v2.id
+  http_method = "GET"
+  api_key_required = false
+
+  authorization = "NONE"
+
+  request_parameters = {
+    "method.request.querystring.contentEntryKey" = true
+    "method.request.querystring.contentTypeId"     = true
+  }
+
+  request_validator_id = aws_api_gateway_request_validator.get-method.id
+}
+
+resource "aws_api_gateway_integration" "lambda_integration" {
+  rest_api_id             = module.api.api_gateway_id
+  resource_id             = aws_api_gateway_resource.v2.id
+  http_method             = aws_api_gateway_method.proxy.http_method
+  integration_http_method = "POST"
+  type                    = "AWS"
+  uri                     = module.lambda.lambda_function_invoke_arn
+
+  passthrough_behavior = "WHEN_NO_TEMPLATES"
+  request_templates = {
+    "application/json" = file("./utils/get-method-integration-request.vtl")
+  }
+
+}
+
+resource "aws_api_gateway_method_response" "proxy" {
+  rest_api_id = module.api.api_gateway_id
+  resource_id = aws_api_gateway_resource.v2.id
+  http_method = aws_api_gateway_method.proxy.http_method
+  status_code = "200"
+
+}
+
+resource "aws_api_gateway_integration_response" "proxy" {
+  rest_api_id = module.api.api_gateway_id
+  resource_id = aws_api_gateway_resource.v2.id
+  http_method = aws_api_gateway_method.proxy.http_method
+  status_code = aws_api_gateway_method_response.proxy.status_code
+
+
+
+  depends_on = [
+    aws_api_gateway_method.proxy,
+    aws_api_gateway_integration.lambda_integration
+  ]
+}
+
+resource "aws_api_gateway_deployment" "deployment" {
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration,
+  ]
+
+  rest_api_id = module.api.api_gateway_id
+  stage_name  = var.environment
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.content_service,
+      aws_api_gateway_resource.v2,
+      aws_api_gateway_integration.lambda_integration,
+      aws_api_gateway_method.proxy
+      ]
+    ))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+module "method-models" {
+  source      = "./modules/api-gateway-response-schemas"
+  rest-api-id = module.api.api_gateway_id
+  resource_id = aws_api_gateway_resource.v2.id
+  http_method = aws_api_gateway_method.proxy.http_method
+
+  integration = aws_api_gateway_integration.lambda_integration
+
+
 }

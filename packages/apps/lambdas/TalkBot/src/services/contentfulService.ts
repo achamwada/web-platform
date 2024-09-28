@@ -1,14 +1,13 @@
-import {
-  ContentfulClientApi,
-  createClient,
-  EntryCollection,
-  EntrySkeletonType,
-} from "contentful";
+import { ContentfulClientApi, createClient, EntryCollection } from "contentful";
 
 interface IContentfulConfig {
   space: string;
   accessToken: string;
   environment: string;
+}
+
+interface Query {
+  [key: string]: string;
 }
 
 export class ContentfulService {
@@ -19,7 +18,7 @@ export class ContentfulService {
     this.client = createClient(config);
   }
 
-  async getEntries<T extends EntrySkeletonType>(
+  async getEntries<T extends Query>(
     contentTypeId: string,
     contentEntryKey?: string,
     query: object = {}
@@ -63,6 +62,7 @@ export class ContentfulService {
         } as T;
       }
 
+      // @ts-ignore
       return items[0];
     } catch (error) {
       console.error(`Error fetching entry with ID ${contentEntryKey}:`, error);

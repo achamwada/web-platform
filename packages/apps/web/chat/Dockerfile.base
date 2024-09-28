@@ -1,5 +1,4 @@
-# Base Node.js Alpine Image with Yarn for Next.js Application
-FROM node:20-alpine
+FROM node:current-alpine
 
 # Set working directory
 WORKDIR /app

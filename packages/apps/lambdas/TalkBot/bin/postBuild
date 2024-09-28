@@ -1,0 +1,2 @@
+cp package.json yarn.lock out/dist/TalkBot
+yarn install --cwd out/dist/TalkBot --production --frozen-lockfile

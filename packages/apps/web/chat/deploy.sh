@@ -24,7 +24,9 @@ docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/travel-web-chat:la
 # Initialize and apply Terraform to deploy infrastructure
 echo "Deploying infrastructure with Terraform..."
 cd ../../../infrastructure
-terraform init
-terraform plan -out=tfplan
-terraform apply tfplan
+terraform init \
+  -backend-config="key=dev/terraform.tfstate" \
+  -backend-config="dynamodb_table=dev-terraform-locks"
+terraform plan
+terraform apply -auto-approve
 cd -

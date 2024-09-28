@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install dependencies using Yarn workspaces focus
-RUN yarn workspaces focus travel-web-chat --production
+RUN yarn install
 
 # Copy the rest of the app
 COPY . .

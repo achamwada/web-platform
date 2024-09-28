@@ -9,7 +9,24 @@ variable "cidr_block" {
 }
 
 variable "environment" {
-  description = "Deployment environmen"
+  description = "Deployment environment"
   type = string
   default     = "dev"
+}
+
+variable "request_parameters" {
+  type = list(string)
+  default = [ "contentTypeId", "contentEntryKey" ]
+  
+}
+
+variable "account_id" {
+  type = string
+  default = "975050161127"
+}
+
+
+variable "lambda_env_vars" {
+  type = map(string)
+  description = "Environment variables for the Lambda function"
 }

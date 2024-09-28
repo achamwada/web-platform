@@ -8,7 +8,7 @@ provider:
 
 functions:
   talkBot:
-    handler: src/handlers/contentfulHandler.handler
+    handler: src/index.handler
     events:
       - http:
           path: talkbot

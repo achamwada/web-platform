@@ -3,21 +3,26 @@ variable "api_name" {
 }
 
 variable "api_description" {
-  description = "The description of the API"
+  description = "The description of the API Gateway"
 }
 
-variable "path" {
-  description = "The path part of the API (e.g., /api)"
+variable "environment" {
+  type = string
 }
 
-variable "http_method" {
-  description = "The HTTP method (e.g., GET, POST)"
+variable "segment" {
+  type = string
+  default = "digital"
 }
+# variable "path" {
+#   description = "The path part of the API"
+# }
 
-variable "integration_uri" {
-  description = "The URI of the service (e.g., ALB target group or Lambda function)"
-}
+# variable "http_method" {
+#   description = "The HTTP method (e.g., GET, POST)"
+# }
 
-variable "stage_name" {
-  description = "The deployment stage (e.g., dev, prod)"
-}
+# variable "request_parameters" {
+#   description = "Query parameters for the API Gateway method"
+#   type        = map(bool)
+# }
