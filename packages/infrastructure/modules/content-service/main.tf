@@ -1,11 +1,11 @@
 module "lambda" {
-  source              = "../lambda"
-  lambda_name         = "talkbot-lambda"
-  lambda_handler      = "talkbot-lambda/index.handler"
-  lambda_runtime      = "nodejs18.x"
-  lambda_source_path  = "${path.root}/../apps/lambdas/TalkBot/out/dist/TalkBot"
+  source             = "../lambda"
+  lambda_name        = "talkbot-lambda"
+  lambda_handler     = "talkbot-lambda/index.handler"
+  lambda_runtime     = "nodejs18.x"
+  lambda_source_path = "${path.root}/../apps/lambdas/TalkBot/out/dist/TalkBot"
 
-  lambda_env_vars     = var.lambda_env_vars
+  lambda_env_vars = var.lambda_env_vars
 }
 
 resource "aws_api_gateway_resource" "content_service" {
@@ -29,16 +29,16 @@ resource "aws_api_gateway_request_validator" "get-method" {
 }
 
 resource "aws_api_gateway_method" "proxy" {
-  rest_api_id = var.api_gateway_id
-  resource_id = aws_api_gateway_resource.v2.id
-  http_method = "GET"
+  rest_api_id      = var.api_gateway_id
+  resource_id      = aws_api_gateway_resource.v2.id
+  http_method      = "GET"
   api_key_required = false
 
   authorization = "NONE"
 
   request_parameters = {
     "method.request.querystring.contentEntryKey" = true
-    "method.request.querystring.contentTypeId"     = true
+    "method.request.querystring.contentTypeId"   = true
   }
 
   request_validator_id = aws_api_gateway_request_validator.get-method.id

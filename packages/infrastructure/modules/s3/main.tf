@@ -36,7 +36,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "generic_bucket_en
 }
 
 resource "aws_s3_bucket" "logging_bucket" {
-  count = var.create_logging_bucket ? 1 : 0
+  count  = var.create_logging_bucket ? 1 : 0
   bucket = var.logging_bucket
 }
 

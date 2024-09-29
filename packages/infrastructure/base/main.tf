@@ -7,7 +7,7 @@ module "dynamodb_terraform_locks" {
   billing_mode  = "PAY_PER_REQUEST"
   tags = {
     "Environment" = var.environment
-    "Project"     = "tripvoya-web-platform-infrastructure"
+    "Project"     = "${var.app_name}-infrastructure"
   }
 }
 
@@ -15,14 +15,14 @@ module "dynamodb_terraform_locks" {
 module "s3_backend_bucket" {
   source = "../modules/s3"
 
-  bucket_name          = "tripvoya-web-platform"
+  bucket_name           = var.app_name
   create_logging_bucket = true
-  logging_bucket       = "tripvoya-web-platform-logging"
-  terraform_backend    = true
-  encryption_algorithm = "AES256"
+  logging_bucket        = "${var.app_name}-logging"
+  terraform_backend     = true
+  encryption_algorithm  = "AES256"
   tags = {
     "Environment" = var.environment
-    "Project"     = "tripvoya-web-platform-infrastructure"
+    "Project"     = "${var.app_name}-infrastructure"
   }
 }
 

@@ -6,7 +6,7 @@ terraform {
   }
 }
 
-/*module "vpc" {
+module "vpc" {
   source               = "./modules/vpc"
   cidr_block           = "10.0.0.0/16"
   public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
@@ -15,22 +15,15 @@ terraform {
 
 module "alb" {
   source            = "./modules/alb"
-  name              = "tripvoya-web-platform-alb"
+  name              = "${var.app_name}-alb"
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.public_subnet_ids
   security_group_id = module.security_groups.alb_sg_id
 }
 
-module "nlb" {
-  source     = "./modules/nlb"
-  name       = "tripvoya-web-platform-nlb"
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.public_subnet_ids
-}
-
 module "ecr" {
   source    = "./modules/ecr"
-  repo_name = "tripvoya-web-platform"
+  repo_name = var.app_name
 }
 
 resource "aws_iam_role" "execution_role" {
@@ -107,9 +100,9 @@ resource "aws_lb_target_group" "alb_tg" {
 
 module "ecs_fargate" {
   source               = "./modules/ecs_fargate"
-  cluster_name         = "tripvoya-web-platform-cluster"
-  family               = "tripvoya-web-platform"
-  container_name       = "tripvoya-web-platform-container"
+  cluster_name         = "${var.app_name}-cluster"
+  family               = var.app_name
+  container_name       = "${var.app_name}-container"
   image                = "travel-web-chat:latest"
   cpu                  = "256"
   memory               = "512"
@@ -117,11 +110,12 @@ module "ecs_fargate" {
   host_port            = 3000
   execution_role_arn   = aws_iam_role.execution_role.arn
   task_role_arn        = aws_iam_role.task_role.arn
-  service_name         = "tripvoya-web-platform-service"
+  service_name         = "${var.app_name}-service"
   desired_count        = 1
   subnet_ids           = module.vpc.public_subnet_ids
   security_group_ids   = [aws_security_group.ecs_sg.id]
   alb_target_group_arn = aws_lb_target_group.alb_tg.arn
+  vpc_id = module.vpc.vpc_id
 
 }
 
@@ -129,12 +123,12 @@ module "security_groups" {
   source        = "./modules/security_groups"
   vpc_id        = module.vpc.vpc_id
   ecs_task_port = 3000
-}*/
+}
 
 
 module "api" {
   source          = "./modules/api_gateway"
-  api_name        = "tripvoya-web-platform-api"
+  api_name        = "${var.app_name}-api"
   api_description = "API Gateway for web platform"
   environment     = var.environment
   segment         = var.segment

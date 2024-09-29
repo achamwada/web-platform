@@ -47,8 +47,8 @@ resource "aws_lambda_function" "lambda" {
   role          = aws_iam_role.lambda_role.arn
 
   # Instead of filename, use s3_bucket and s3_key
-  s3_bucket     = aws_s3_bucket.lambda_bucket.bucket
-  s3_key        = aws_s3_object.lambda_zip.key
+  s3_bucket = aws_s3_bucket.lambda_bucket.bucket
+  s3_key    = aws_s3_object.lambda_zip.key
 
   environment {
     variables = var.lambda_env_vars

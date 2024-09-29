@@ -17,15 +17,15 @@ variable "encryption_algorithm" {
 
 variable "create_logging_bucket" {
   description = "should we create a logging bucket"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 
 }
 
 variable "logging_bucket" {
   description = "The S3 bucket to send access logs to (optional)"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "logging_prefix" {

@@ -62,3 +62,7 @@ variable "security_group_ids" {
 variable "alb_target_group_arn" {
   description = "The ALB target group ARN to attach to the ECS service"
 }
+
+variable "vpc_id" {
+  type = string
+}

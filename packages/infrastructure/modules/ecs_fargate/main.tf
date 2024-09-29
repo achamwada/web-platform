@@ -2,6 +2,15 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.cluster_name
 }
 
+resource "aws_lb_target_group" "alb_target_group" {
+  name     = "alb-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+  target_type = "ip"
+}
+
+
 resource "aws_ecs_task_definition" "task" {
   family                   = var.family
   network_mode             = "awsvpc"
@@ -34,7 +43,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     subnets          = var.subnet_ids
     security_groups  = var.security_group_ids
-    assign_public_ip = true
+    assign_public_ip = false
   }
 
   load_balancer {

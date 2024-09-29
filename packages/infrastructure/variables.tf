@@ -45,3 +45,7 @@ variable "vpc_public_subnet_cidrs" {
 variable "vpc_private_subnet_cidrs" {
   type = list(string)
 }
+
+variable "app_name" {
+  type = string
+}

@@ -16,8 +16,8 @@ variable "lambda_source_path" {
 
 variable "zip_name" {
   description = "The name of the Lambda zip file"
-  type = string
-  default = "lambda"
+  type        = string
+  default     = "lambda"
 }
 
 variable "lambda_env_vars" {
@@ -26,7 +26,7 @@ variable "lambda_env_vars" {
 }
 
 variable "lambda_bucket_name" {
-  type = string
+  type    = string
   default = "web-platform-lambda-code"
-  
+
 }
