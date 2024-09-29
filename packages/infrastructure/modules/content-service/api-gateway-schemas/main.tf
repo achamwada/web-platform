@@ -1,17 +1,8 @@
-
-# resource "aws_api_gateway_method_response" "response_200" {
-#   rest_api_id = var.rest-api-id
-#   resource_id = var.resource_id
-#   http_method = var.http_method
-#   status_code = "200"
-
-# }
-
 resource "aws_api_gateway_integration_response" "integration_response_200" {
   rest_api_id       = var.rest-api-id
   resource_id       = var.resource_id
   http_method       = var.http_method
-  status_code       = "200"//aws_api_gateway_method_response.response_200.status_code
+  status_code       = "200"
   selection_pattern = ""
 
   depends_on = [

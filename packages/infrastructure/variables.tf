@@ -10,23 +10,38 @@ variable "cidr_block" {
 
 variable "environment" {
   description = "Deployment environment"
-  type = string
+  type        = string
   default     = "dev"
 }
 
 variable "request_parameters" {
-  type = list(string)
-  default = [ "contentTypeId", "contentEntryKey" ]
-  
+  type    = list(string)
+  default = ["contentTypeId", "contentEntryKey"]
+
 }
 
 variable "account_id" {
   type = string
-  default = "975050161127"
 }
 
 
 variable "lambda_env_vars" {
-  type = map(string)
+  type        = map(string)
   description = "Environment variables for the Lambda function"
+}
+
+variable "segment" {
+  type = string
+}
+
+variable "vpc_cidr_block" {
+  type = string
+}
+
+variable "vpc_public_subnet_cidrs" {
+  type = list(string)
+}
+
+variable "vpc_private_subnet_cidrs" {
+  type = list(string)
 }

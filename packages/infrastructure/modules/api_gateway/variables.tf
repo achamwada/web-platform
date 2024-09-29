@@ -12,17 +12,4 @@ variable "environment" {
 
 variable "segment" {
   type = string
-  default = "digital"
 }
-# variable "path" {
-#   description = "The path part of the API"
-# }
-
-# variable "http_method" {
-#   description = "The HTTP method (e.g., GET, POST)"
-# }
-
-# variable "request_parameters" {
-#   description = "Query parameters for the API Gateway method"
-#   type        = map(bool)
-# }
