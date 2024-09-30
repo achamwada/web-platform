@@ -8,9 +8,9 @@ terraform {
 
 module "vpc" {
   source               = "./modules/vpc"
-  cidr_block           = "10.0.0.0/16"
-  public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
+  cidr_block           = var.vpc_cidr_block
+  public_subnet_cidrs  = var.vpc_public_subnet_cidrs
+  private_subnet_cidrs = var.vpc_private_subnet_cidrs
 }
 
 module "alb" {
@@ -88,6 +88,7 @@ resource "aws_lb_target_group" "alb_tg" {
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
 
+  target_type = "ip"
   health_check {
     path                = "/"
     interval            = 30
@@ -97,6 +98,16 @@ resource "aws_lb_target_group" "alb_tg" {
   }
 }
 
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = module.alb.alb_arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_tg.arn
+  }
+}
 
 module "ecs_fargate" {
   source               = "./modules/ecs_fargate"
@@ -104,10 +115,6 @@ module "ecs_fargate" {
   family               = var.app_name
   container_name       = "${var.app_name}-container"
   image                = "travel-web-chat:latest"
-  cpu                  = "256"
-  memory               = "512"
-  container_port       = 3000
-  host_port            = 3000
   execution_role_arn   = aws_iam_role.execution_role.arn
   task_role_arn        = aws_iam_role.task_role.arn
   service_name         = "${var.app_name}-service"
@@ -115,8 +122,7 @@ module "ecs_fargate" {
   subnet_ids           = module.vpc.public_subnet_ids
   security_group_ids   = [aws_security_group.ecs_sg.id]
   alb_target_group_arn = aws_lb_target_group.alb_tg.arn
-  vpc_id = module.vpc.vpc_id
-
+  vpc_id               = module.vpc.vpc_id
 }
 
 module "security_groups" {
@@ -125,14 +131,12 @@ module "security_groups" {
   ecs_task_port = 3000
 }
 
-
 module "api" {
   source          = "./modules/api_gateway"
   api_name        = "${var.app_name}-api"
   api_description = "API Gateway for web platform"
   environment     = var.environment
   segment         = var.segment
-
 }
 
 module "content_service" {
@@ -144,5 +148,8 @@ module "content_service" {
   segment                      = var.segment
 
   lambda_env_vars = var.lambda_env_vars
+}
 
+output "alb_dns_name" {
+  value = module.alb.alb_dns_name
 }

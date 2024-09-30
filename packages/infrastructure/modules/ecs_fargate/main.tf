@@ -1,13 +1,10 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.cluster_name
-}
 
-resource "aws_lb_target_group" "alb_target_group" {
-  name     = "alb-target-group"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
-  target_type = "ip"
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 

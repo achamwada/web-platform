@@ -5,6 +5,6 @@ variable "environment" {
 }
 
 variable "app_name" {
-  type        = string
-  default     = "tripvoya-web-platform"
+  type    = string
+  default = "tripvoya-web-platform"
 }
