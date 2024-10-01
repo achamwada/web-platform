@@ -39,18 +39,6 @@ export const handler = async (
   const contentEntryKey = event.params?.querystring?.contentEntryKey || "";
   const contentTypeId = event.params?.querystring?.contentTypeId || "";
 
-  console.log("[handler] =>", {
-    contentTypeId,
-    contentEntryKey,
-    CONTENTFUL_SPACE_ID,
-    CONTENTFUL_DELIVERY_TOKEN,
-    CONTENTFUL_ENVIRONMENT,
-    event: JSON.stringify(event),
-    alex: "chamwada",
-    params: event.params,
-    querystring: event.params?.querystring,
-  });
-
   if (!contentTypeId) {
     return generateAPIGWResponse(
       {
