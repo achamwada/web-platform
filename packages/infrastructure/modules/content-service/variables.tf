@@ -21,3 +21,7 @@ variable "lambda_env_vars" {
 variable "segment" {
   type = string
 }
+
+variable "execution_arn" {
+  type = string
+}

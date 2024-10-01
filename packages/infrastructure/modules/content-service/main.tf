@@ -1,3 +1,13 @@
+resource "aws_lambda_permission" "apigw_invoke" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda.lambda_function_name 
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${var.execution_arn}/*/${aws_api_gateway_method.proxy.http_method}/${aws_api_gateway_resource.content_service.path_part}/${aws_api_gateway_resource.v2.path_part}"
+}
+
+
 module "lambda" {
   source             = "../lambda"
   lambda_name        = "talkbot-lambda"

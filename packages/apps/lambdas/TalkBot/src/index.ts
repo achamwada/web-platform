@@ -24,7 +24,7 @@ export interface EventType
     querystring: {
       spaceName?: string;
       contentEntryKey: string;
-      contentType: string;
+      contentTypeId: string;
     };
   };
 }
@@ -36,8 +36,8 @@ export const handler = async (
 ): Promise<Record<string, unknown> | void> => {
   const { awsRequestId } = context;
 
-  const contentEntryKey = event.queryStringParameters?.contentEntryKey || "";
-  const contentTypeId = event.queryStringParameters?.contentTypeId || "";
+  const contentEntryKey = event.params?.querystring?.contentEntryKey || "";
+  const contentTypeId = event.params?.querystring?.contentTypeId || "";
 
   console.log("[handler] =>", {
     contentTypeId,
@@ -45,7 +45,10 @@ export const handler = async (
     CONTENTFUL_SPACE_ID,
     CONTENTFUL_DELIVERY_TOKEN,
     CONTENTFUL_ENVIRONMENT,
-    event,
+    event: JSON.stringify(event),
+    alex: "chamwada",
+    params: event.params,
+    querystring: event.params?.querystring,
   });
 
   if (!contentTypeId) {

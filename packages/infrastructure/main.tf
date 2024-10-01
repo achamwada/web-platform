@@ -6,7 +6,7 @@ terraform {
   }
 }
 
-module "vpc" {
+/*module "vpc" {
   source               = "./modules/vpc"
   cidr_block           = var.vpc_cidr_block
   public_subnet_cidrs  = var.vpc_public_subnet_cidrs
@@ -129,7 +129,7 @@ module "security_groups" {
   source        = "./modules/security_groups"
   vpc_id        = module.vpc.vpc_id
   ecs_task_port = 3000
-}
+}*/
 
 module "api" {
   source          = "./modules/api_gateway"
@@ -142,6 +142,7 @@ module "api" {
 module "content_service" {
   source      = "./modules/content-service"
   environment = var.environment
+  execution_arn = module.api.execution_arn
 
   api_gateway_id               = module.api.api_gateway_id
   api_gateway_root_resource_id = module.api.root_resource_id
@@ -150,6 +151,6 @@ module "content_service" {
   lambda_env_vars = var.lambda_env_vars
 }
 
-output "alb_dns_name" {
+/*output "alb_dns_name" {
   value = module.alb.alb_dns_name
-}
+}*/
