@@ -1,9 +1,9 @@
-
 import {
   APIGatewayEventRequestContextWithAuthorizer,
   APIGatewayProxyEventBase,
-  APIGatewayProxyCallback, Context as LambdaContext 
-} from 'aws-lambda'
+  APIGatewayProxyCallback,
+  Context as LambdaContext,
+} from "aws-lambda";
 
 import {
   CONTENTFUL_SPACE_ID,
@@ -14,7 +14,7 @@ import {
   INTERNAL_SERVER_ERROR,
 } from "./config/constants";
 import { ContentfulService } from "./services/contentfulService";
-import { generateAPIGWResponse } from './services/apiGateway';
+import { generateAPIGWResponse } from "./services/apiGateway";
 
 export interface EventType
   extends APIGatewayProxyEventBase<
@@ -22,22 +22,22 @@ export interface EventType
   > {
   params: {
     querystring: {
-      spaceName?: string
-      contentEntryKey: string
-      contentType: string
-    }
-  }
+      spaceName?: string;
+      contentEntryKey: string;
+      contentType: string;
+    };
+  };
 }
 
 export const handler = async (
   event: EventType,
   context: LambdaContext,
-  callback: APIGatewayProxyCallback,
+  callback: APIGatewayProxyCallback
 ): Promise<Record<string, unknown> | void> => {
-  const { awsRequestId } = context
+  const { awsRequestId } = context;
 
-  const contentEntryKey = event.queryStringParameters?.contentEntryKey || ''
-  const contentTypeId = event.queryStringParameters?.contentTypeId || ''
+  const contentEntryKey = event.queryStringParameters?.contentEntryKey || "";
+  const contentTypeId = event.queryStringParameters?.contentTypeId || "";
 
   console.log("[handler] =>", {
     contentTypeId,
@@ -49,13 +49,15 @@ export const handler = async (
   });
 
   if (!contentTypeId) {
-    return generateAPIGWResponse({
-      statusCode: 400,
+    return generateAPIGWResponse(
+      {
+        statusCode: 400,
         body: BAD_REQUEST,
         contentEntryKey,
         awsRequestId,
-
-    }, callback);
+      },
+      callback
+    );
   }
 
   try {
@@ -71,32 +73,41 @@ export const handler = async (
         contentTypeId,
         contentEntryKey
       );
-      return generateAPIGWResponse({
-        statusCode: 200,
-        body: entry,
-        awsRequestId,
-        contentEntryKey,
-      }, callback);
+      return generateAPIGWResponse(
+        {
+          statusCode: entry ? 200 : 404,
+          body: entry,
+          awsRequestId,
+          contentEntryKey,
+        },
+        callback
+      );
     } else {
       const entries = await contentfulService.getEntries(contentTypeId);
-      return generateAPIGWResponse({
-        statusCode: 200,
-        body: entries,
-        awsRequestId,
-        contentEntryKey,
-      }, callback);
+      return generateAPIGWResponse(
+        {
+          statusCode: entries ? 200 : 404,
+          body: entries,
+          awsRequestId,
+          contentEntryKey,
+        },
+        callback
+      );
     }
   } catch (error) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const { code, message } = error
-    return generateAPIGWResponse({
-      statusCode: code ?? 500,
-      body: VALID_ERROR_MESSAGES.includes(message)
-        ? message
-        : INTERNAL_SERVER_ERROR,
-      contentEntryKey,
-      awsRequestId,
-    }, callback);
+    const { code, message } = error;
+    return generateAPIGWResponse(
+      {
+        statusCode: code ?? 500,
+        body: VALID_ERROR_MESSAGES.includes(message)
+          ? message
+          : INTERNAL_SERVER_ERROR,
+        contentEntryKey,
+        awsRequestId,
+      },
+      callback
+    );
   }
 };
