@@ -1,0 +1,29 @@
+service: talkbot-service
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+
+functions:
+  talkBot:
+    handler: src/index.handler
+    events:
+      - http:
+          path: talkbot
+          method: get
+          request:
+            parameters:
+              querystrings:
+                contentTypeId: true
+                contentEntryKey: false
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    stage: ${opt:stage, 'dev'}
+    prefix: ""
+    httpPort: 7777
